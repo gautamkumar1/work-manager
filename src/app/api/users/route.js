@@ -57,14 +57,3 @@ export async function POST(request) {
   }
 }
 
-export function PUT() {}
-
-export function PATCH() {}
-
-export function DELETE(request) {
-    return NextResponse.json({
-     message: "User deleted successfully",
-      status: true,
-    });
-  
-}

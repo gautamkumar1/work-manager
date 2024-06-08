@@ -1,16 +1,53 @@
+// import mongoose from "mongoose";
+import { connectDb } from "@/helper/db";
+import { Work } from "@/models/work";
 import { NextResponse } from "next/server";
 
-export async function POST(request){
-    // console.log(request.body); // Get the of the body contents.
-    // console.log(request.headers); // get the headers of the request
-    // console.log(request.method); // get the method of the request
-    // console.log(request.cookies); // get the cookies of the request
-    // console.log(request.url); // Contains the URL of the request.
-    // const jsonData = await request.json() // Returns a promise that resolves with the result of parsing the request body as JSON.
-    // console.log(jsonData);
-    // console.log(request.nextUrl.pathname);
-    // console.log(request.nextUrl.searchParams); // / Given a request to /home?name=Gautam, searchParams is { 'name': 'Gautam' }
-    return NextResponse.json({
-        "message":"Data received Successfully"
-    })
+export async function POST(request) {
+    const { workerName, position, workHours, salary } = await request.json();
+
+    if (!workerName || !position || !workHours || !salary) {
+        return NextResponse.json({
+            message: "All work fields are required",
+            status: false,
+        }, { status: 400 });
+    }
+
+    try {
+        const work = new Work({
+            workerName,
+            position,
+            workHours,
+            salary,
+        });
+        const workCreated = await work.save();
+        return NextResponse.json({
+            message: "Work Created Successfully",
+            status: true,
+            data: workCreated,
+        }, { status: 201 });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({
+            message: "Work Creation Failed",
+            status: false,
+        }, { status: 500 });
+    }
+}
+
+export async function GET(request) {
+    try {
+        const works = await Work.find();
+        return NextResponse.json({
+            message: "All works found",
+            status: true,
+            data: works,
+        }, { status: 200 });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({
+            message: "All works found failed",
+            status: false,
+        }, { status: 500 });
+    }
 }
